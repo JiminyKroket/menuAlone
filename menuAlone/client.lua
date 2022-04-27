@@ -1,4 +1,4 @@
-local openedMenus, resList, orderedMenus, menuSettings = {}, {}, {}, {}
+local openedMenus, resList, menuSettings = {}, {}, {}
 local selectedElm, selectedVal = 0
 local closing, moveToCurrentSetting = false, false
 
@@ -128,11 +128,13 @@ RunMenu = function(mType, res, name, opts, cb, onClose, onNew)
         local x,y = Config.screenLocations[menu.location].x, Config.screenLocations[menu.location].y
         if menu.location == 'custom' and menuSettings.custom then x = menuSettings.x; y = menuSettings.y; end
         local textScale = GetRenderedCharacterHeight(menuSettings.scale, menuSettings.font)
-        local limitCenter = math.ceil(menuSettings.limit/2)
+        local mLimit = ((#menu.elements >= menuSettings.limit and menuSettings.limit) or ((#menu.elements%2 == 0) and #menu.elements - 1) or #menu.elements)
+        if (mLimit < 2) and (#menu.elements > 1) then mLimit = 2 end
+        local limitCenter = math.ceil(mLimit/2)
         local titleY = y-(textScale*limitCenter)
         MenuText(menu.title,x,titleY,menuSettings.scale,vector4(255,255,255,200))
         local subt = 1
-        for i = 1,menuSettings.limit do
+        for i = 1,mLimit do
           if i < limitCenter then
             local diff = limitCenter - i
             local prev = menu.selElm - diff
